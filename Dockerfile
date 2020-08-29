@@ -14,10 +14,6 @@ RUN apt-get update && \
     apt-get -y  install git vim autoconf f2c && \
     apt-get -y install bsdmainutils libssl-dev libtool pkg-config
 
-ARG	GIT_USER_NAME
-ARG GIT_PASSWD
-ENV GIT_USER_NAME=${GIT_USER_NAME}
-ENV GIT_PASSWD=${GIT_PASSWD}
 RUN git clone https://github.com/XGSTeam/nacacoin/nacacoin.git && \
 		cd nacacoin && \
 		sh autogen.sh && \
