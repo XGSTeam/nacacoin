@@ -804,7 +804,7 @@ AC_LINK_IFELSE([AC_LANG_SOURCE([
     AC_MSG_RESULT(no)
   ]
 )
-LDFLAGS="$TEMP_LDFLAGS -lf2c"
+LDFLAGS="$TEMP_LDFLAGS"
 
 # Check for different ways of gathering OS randomness
 AC_MSG_CHECKING(for Linux getrandom syscall)
