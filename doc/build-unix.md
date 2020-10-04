@@ -36,7 +36,7 @@ These dependencies are required:
  libssl      | Crypto           | Random Number Generation, Elliptic Curve Cryptography
  libboost    | Utility          | Library for threading, data structures, etc
  libevent    | Networking       | OS independent asynchronous networking
- libf2c      | POW              | Required by the proof of work algorithm
+ f2c      | POW              | Required by the proof of work algorithm
 
 Optional dependencies:
 
