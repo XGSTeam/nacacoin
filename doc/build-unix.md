@@ -36,6 +36,7 @@ These dependencies are required:
  libssl      | Crypto           | Random Number Generation, Elliptic Curve Cryptography
  libboost    | Utility          | Library for threading, data structures, etc
  libevent    | Networking       | OS independent asynchronous networking
+ libf2c      | POW              | Required by the proof of work algorithm
 
 Optional dependencies:
 
@@ -70,7 +71,7 @@ tuned to conserve memory with additional CXXFLAGS:
 
 Build requirements:
 
-    sudo apt-get install build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev
+    sudo apt-get install build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev f2c
 
 BerkeleyDB is required for the wallet.
 
@@ -114,26 +115,6 @@ libqrencode (optional) can be installed with:
 Once these are installed, they will be found by configure and a nacacoin-qt executable will be
 built by default.
 
-
-### Fedora
-
-#### Dependency Build Instructions
-
-Build requirements:
-
-    sudo dnf install gcc-c++ libtool make autoconf automake openssl-devel libevent-devel boost-devel libdb4-devel libdb4-cxx-devel python3
-
-Optional:
-
-    sudo dnf install miniupnpc-devel
-
-To build with Qt 5 you need the following:
-
-    sudo dnf install qt5-qttools-devel qt5-qtbase-devel protobuf-devel
-
-libqrencode (optional) can be installed with:
-
-    sudo dnf install qrencode-devel
 
 Notes
 -----
