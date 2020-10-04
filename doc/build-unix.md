@@ -71,17 +71,17 @@ tuned to conserve memory with additional CXXFLAGS:
 
 Build requirements:
 
-    sudo apt-get install build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev f2c
+    sudo apt-get -y install build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils python3 libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-test-dev libboost-thread-dev f2c
 
 BerkeleyDB is required for the wallet.
 
 **For Ubuntu only:** db4.8 packages are available [here](https://launchpad.net/~bitcoin/+archive/bitcoin).
 You can add the repository and install using the following commands:
 
-    sudo apt-get install software-properties-common
+    sudo apt-get -y install software-properties-common
     sudo add-apt-repository ppa:bitcoin/bitcoin
     sudo apt-get update
-    sudo apt-get install libdb4.8-dev libdb4.8++-dev
+    sudo apt-get -y install libdb4.8-dev libdb4.8++-dev
 
 Ubuntu and Debian have their own libdb-dev and libdb++-dev packages, but these will install
 BerkeleyDB 5.1 or later, which break binary wallet compatibility with the distributed executables which
@@ -92,11 +92,11 @@ See the section "Disable-wallet mode" to build NaCacoin Core without wallet.
 
 Optional (see --with-miniupnpc and --enable-upnp-default):
 
-    sudo apt-get install libminiupnpc-dev
+    sudo apt-get -y install libminiupnpc-dev
 
 ZMQ dependencies (provides ZMQ API 4.x):
 
-    sudo apt-get install libzmq3-dev
+    sudo apt-get -y install libzmq3-dev
 
 #### Dependencies for the GUI
 
@@ -106,11 +106,11 @@ To build without GUI pass `--without-gui`.
 
 To build with Qt 5 you need the following:
 
-    sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
+    sudo apt-get -y install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
 
 libqrencode (optional) can be installed with:
 
-    sudo apt-get install libqrencode-dev
+    sudo apt-get -y install libqrencode-dev
 
 Once these are installed, they will be found by configure and a nacacoin-qt executable will be
 built by default.
@@ -132,21 +132,6 @@ turned off by default.  See the configure options for upnp behavior desired:
 	--without-miniupnpc      No UPnP support miniupnp not required
 	--disable-upnp-default   (the default) UPnP support turned off by default at runtime
 	--enable-upnp-default    UPnP support turned on by default at runtime
-
-
-Berkeley DB
------------
-It is recommended to use Berkeley DB 4.8. If you have to build it yourself,
-you can use [the installation script included in contrib/](/contrib/install_db4.sh)
-like so
-
-```shell
-./contrib/install_db4.sh `pwd`
-```
-
-from the root of the repository.
-
-**Note**: You only need Berkeley DB if the wallet is enabled (see the section *Disable-Wallet mode* below).
 
 Boost
 -----
