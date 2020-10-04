@@ -188,9 +188,9 @@ public:
         
         // For now, not connection to the Nacacoin seed machines
         // We have a node on Amazon
-        //vSeeds.emplace_back("dnsseed01.nacacoin.com");
+        vSeeds.emplace_back("dnsseed01.nacacoin.com");
         // Let's use the IP address for now as the A record does not work
-        // vSeeds.emplace_back("18.216.130.161");
+         vSeeds.emplace_back("18.216.130.161");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,53);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
