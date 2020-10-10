@@ -1,17 +1,32 @@
-
-// Copyright 2020 XGSTeam, NaCaTeam
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
+/*
+ * Copyright 2020 XGSTeam, NaCaTeam
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ */
 #include "f2c.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /* Common Block Declarations */
-
-int getabscut_(doublereal *);
-
 
 struct {
     doublereal radius, rmax, rsqmax, r_initial__, xbound;
@@ -19,23 +34,21 @@ struct {
 
 #define _BLNK__1 _BLNK__
 
-union {
-    struct {
-	doublereal temsta;
-	integer istep, interval;
-	doublereal qv, qa, a_fs__, c_fs__, e0_fs__;
-	integer m_fs__, nn_fs__;
-    } _1;
-    struct {
-	doublereal temsta;
-	integer istep, interval;
-	doublereal qv, qa, a, c__, e0;
-	integer m, nn;
-    } _2;
-} x_data__;
+struct x_data__1_ {
+    doublereal temsta;
+    integer istep, interval;
+    doublereal qv, qa, a_fs__, c_fs__, e0_fs__;
+    integer m_fs__, nn_fs__;
+};
+struct x_data__2_ {
+    doublereal temsta;
+    integer istep, interval;
+    doublereal qv, qa, a, c__, e0;
+    integer m, nn;
+};
 
-#define x_data__1 (x_data__._1)
-#define x_data__2 (x_data__._2)
+#define x_data__1 (*(struct x_data__1_ *) &x_data__)
+#define x_data__2 (*(struct x_data__2_ *) &x_data__)
 
 struct {
     logical trace;
@@ -49,15 +62,164 @@ struct {
 
 #define use_func__1 use_func__
 
+/* Initialized data */
+
+struct {
+    doublereal fill_1[4];
+    doublereal e_2[3];
+    integer e_3[2];
+    } x_data__ = { {0}, 3.52, 39.432, .015707, 6, 9 };
+
+
 /* Table of constant values */
 
-static doublereal c_b2 = .33333333333333331;
+static integer c__5 = 5;
 static integer c__1 = 1;
 static integer c__9 = 9;
-static integer c__5 = 5;
-static doublereal c_b29 = 10.;
+static doublereal c_b23 = 10.;
+static doublereal c_b27 = .33333333333333331;
 static integer c__3 = 3;
-static integer c_b176 = -123457;
+static integer c_b201 = -123457;
+
+/* naca is our novel hash function. */
+/* Subroutine */ int naca_(integer *ntime, integer *idum, logical *runcg, 
+	doublereal *xzuixi, doublereal *ezuixi, integer *iezuixi, logical *
+	itrace)
+{
+
+    /* Format strings */
+    static char fmt_230[] = "(1x,\002over, last energy=\002,f17.6,\002, iEzu"
+	    "ixi=\002,i14)";
+
+    /* System generated locals */
+    integer i__1;
+    doublereal d__1;
+
+    /* Builtin functions */
+    double d_int(doublereal *);
+    integer s_rsle(cilist *), do_lio(integer *, integer *, char *, ftnlen), 
+	    e_rsle(void), s_wsle(cilist *), e_wsle(void), s_wsfe(cilist *), 
+	    do_fio(integer *, char *, ftnlen), e_wsfe(void);
+
+    /* Local variables */
+    static integer inilogic;
+    static doublereal havepass;
+    static integer i__, j, n;
+    static doublereal x[750]	/* was [250][3] */;
+    static integer i3, ii, jj;
+    static doublereal xm;
+    extern /* Subroutine */ int coordin_sg__(integer *, integer *, doublereal 
+	    *);
+    static doublereal tim1[3], tim2[3];
+    extern /* Subroutine */ int tran_energy__(integer *, doublereal *, 
+	    doublereal *, doublereal *, integer *, logical *);
+    static integer sum1, just;
+    static doublereal xmini[750]	/* was [250][3] */, etotm;
+    extern /* Subroutine */ int calcu_initial__(integer *);
+    static doublereal sumti;
+    extern /* Subroutine */ int zuixi_(integer *, doublereal *, doublereal *, 
+	    doublereal *, doublereal *);
+    static doublereal etotm0;
+    extern /* Subroutine */ int getabscut_(doublereal *);
+    static doublereal runtime;
+
+    /* Fortran I/O blocks */
+    static cilist io___15 = { 0, 15, 0, 0, 0 };
+    static cilist io___18 = { 0, 6, 0, 0, 0 };
+    static cilist io___19 = { 0, 6, 0, 0, 0 };
+    static cilist io___24 = { 0, 6, 0, fmt_230, 0 };
+
+
+    /* Parameter adjustments */
+    xzuixi -= 251;
+
+    /* Function Body */
+    tracecom_1.trace = *itrace;
+/* open(11,file='relax.in',status='old',form='formatted') */
+/* open(15,file='relax.in5',status='old',form='formatted') */
+/* open(12,file='relax.ou2',status='unknown',form='formatted') */
+/* open(13,file='relax.ou3',status='unknown',form='formatted') */
+/* open(14,file='relax.ou4',status='unknown',form='formatted') */
+/* open(16,file='relax.ou6',status='unknown',form='formatted') */
+/* open(17,file='relax.ou7',status='unknown',form='formatted') */
+/* data idum/-7310077/ */
+/*        data temsta,istep,interval,qv,qa/1300.d0,1,700, */
+/*     $   2.62d0,-5.d0/ */
+/*        data temsta,interval,qv,qa/1300.d0,700, */
+/*     $   2.62d0,-5.d0/ */
+/* Every 100 days, increment n with one */
+/* xm = dfloat(nTime) / (1000 * 3600.d0) */
+    xm = (doublereal) (*ntime - 1591018456) / 3600.;
+/* n = 60 + dint(xm / (24 * 100.d0)) */
+    d__1 = xm / 8760.;
+    n = (integer) (d_int(&d__1) + 60);
+    getabscut_(tim1);
+    calcu_initial__(&n);
+/* n = 70 + dint(height/262080.00) */
+/* iiistep = 5 */
+/* istep=iistep */
+/* get xbound */
+    x_data__1.temsta = 1300.;
+    x_data__1.istep = 1;
+    x_data__1.interval = 700;
+    x_data__1.qv = 2.62;
+    x_data__1.qa = -5.;
+    just = 1;
+    i__1 = n;
+    for (i__ = 1; i__ <= i__1; ++i__) {
+	for (j = 1; j <= 3; ++j) {
+	    x[i__ + j * 250 - 251] = xzuixi[i__ + j * 250];
+	}
+    }
+    inilogic = 0;
+    if (inilogic == 1) {
+	i__1 = n;
+	for (ii = 1; ii <= i__1; ++ii) {
+	    s_rsle(&io___15);
+	    for (jj = 1; jj <= 3; ++jj) {
+		do_lio(&c__5, &c__1, (char *)&x[ii + jj * 250 - 251], (ftnlen)
+			sizeof(doublereal));
+	    }
+	    e_rsle();
+	}
+	havepass = 0.;
+    } else if (inilogic == 0) {
+	i__1 = just;
+	for (ii = 1; ii <= i__1; ++ii) {
+	    coordin_sg__(&n, idum, x);
+	}
+	havepass = 0.;
+    } else {
+    }
+/* L1500: */
+/* call   Fangnewcoord(n,x) */
+/* call   Tran_energy(Itime,n,x,xmini,etotM,idum,runCG) */
+    tran_energy__(&n, x, xmini, &etotm, idum, runcg);
+    etotm0 = etotm;
+    zuixi_(&n, &etotm, ezuixi, xmini, &xzuixi[251]);
+    sum1 = (integer) havepass;
+/* L1000: */
+    havepass = (doublereal) sum1;
+    if (*ezuixi > 4284900.) {
+	*ezuixi = 4284900.;
+    }
+    d__1 = (*ezuixi + 1e4) * 1000;
+    *iezuixi = (integer) d_int(&d__1);
+/* L120: */
+/* L110: */
+/* L130: */
+    sumti = 0.;
+    for (i3 = 1; i3 <= 300000; ++i3) {
+	getabscut_(tim2);
+	sumti += tim2[0];
+    }
+    if (sumti <= -1e10) {
+	*iezuixi = (integer) d_int(&c_b23);
+    }
+    runtime = tim2[0] - tim1[0];
+/* L200: */
+    return 0;
+} /* naca_ */
 
 /* Subroutine */ int calcu_initial__(integer *n)
 {
@@ -78,9 +240,9 @@ static integer c_b176 = -123457;
     static doublereal v, v_atom__, dimeter;
 
     /* Fortran I/O blocks */
-    static cilist io___4 = { 0, 6, 0, fmt_100, 0 };
-    static cilist io___5 = { 0, 6, 0, 0, 0 };
-    static cilist io___6 = { 0, 6, 0, 0, 0 };
+    static cilist io___32 = { 0, 6, 0, fmt_100, 0 };
+    static cilist io___33 = { 0, 6, 0, 0, 0 };
+    static cilist io___34 = { 0, 6, 0, 0, 0 };
 
 
 /* double precision function calcu_initial(n) */
@@ -89,7 +251,7 @@ static integer c_b176 = -123457;
     v_atom__ = d__1 * (d__1 * d__1) / 4.;
     v = v_atom__;
     d__1 = (doublereal) (*n) * v * 3. / 12.5663704;
-    _BLNK__1.radius = pow_dd(&d__1, &c_b2);
+    _BLNK__1.radius = pow_dd(&d__1, &c_b27);
     _BLNK__1.rmax = _BLNK__1.radius * 1.1;
 /* r_initial=0.5d0*(radius+Rmax) */
     _BLNK__1.r_initial__ = _BLNK__1.radius * 1.3;
@@ -247,27 +409,28 @@ static integer c_b176 = -123457;
 	     doublereal *, doublereal *, doublereal *, doublereal *);
     static doublereal timsa1[3], timsa2[3], timecg, record[60], timesa;
     extern doublereal visita_(doublereal *, doublereal *, integer *);
-    extern twobden_(integer *, doublereal *, doublereal *, doublereal *);
+    extern /* Subroutine */ int getabscut_(doublereal *), twobden_(integer *, 
+	    doublereal *, doublereal *, doublereal *);
     static doublereal density[250];
 
     /* Fortran I/O blocks */
-    static cilist io___14 = { 0, 6, 0, fmt_900, 0 };
-    static cilist io___28 = { 0, 6, 0, 0, 0 };
-    static cilist io___32 = { 0, 6, 0, 0, 0 };
-    static cilist io___33 = { 0, 6, 0, 0, 0 };
-    static cilist io___34 = { 0, 6, 0, 0, 0 };
-    static cilist io___35 = { 0, 6, 0, 0, 0 };
-    static cilist io___36 = { 0, 6, 0, 0, 0 };
-    static cilist io___57 = { 0, 6, 0, 0, 0 };
+    static cilist io___42 = { 0, 6, 0, fmt_900, 0 };
+    static cilist io___56 = { 0, 6, 0, 0, 0 };
+    static cilist io___60 = { 0, 6, 0, 0, 0 };
     static cilist io___61 = { 0, 6, 0, 0, 0 };
-    static cilist io___63 = { 0, 6, 0, fmt_901, 0 };
-    static cilist io___65 = { 0, 6, 0, 0, 0 };
-    static cilist io___66 = { 0, 6, 0, 0, 0 };
-    static cilist io___67 = { 0, 6, 0, 0, 0 };
-    static cilist io___72 = { 0, 6, 0, 0, 0 };
-    static cilist io___73 = { 0, 6, 0, fmt_140, 0 };
-    static cilist io___74 = { 0, 6, 0, 0, 0 };
-    static cilist io___77 = { 0, 6, 0, 0, 0 };
+    static cilist io___62 = { 0, 6, 0, 0, 0 };
+    static cilist io___63 = { 0, 6, 0, 0, 0 };
+    static cilist io___64 = { 0, 6, 0, 0, 0 };
+    static cilist io___85 = { 0, 6, 0, 0, 0 };
+    static cilist io___89 = { 0, 6, 0, 0, 0 };
+    static cilist io___91 = { 0, 6, 0, fmt_901, 0 };
+    static cilist io___93 = { 0, 6, 0, 0, 0 };
+    static cilist io___94 = { 0, 6, 0, 0, 0 };
+    static cilist io___95 = { 0, 6, 0, 0, 0 };
+    static cilist io___100 = { 0, 6, 0, 0, 0 };
+    static cilist io___101 = { 0, 6, 0, fmt_140, 0 };
+    static cilist io___102 = { 0, 6, 0, 0, 0 };
+    static cilist io___105 = { 0, 6, 0, 0, 0 };
 
 
     /* Parameter adjustments */
@@ -279,7 +442,7 @@ static integer c_b176 = -123457;
 /* idum=-91103477 !call of Tran_energy has a different idum. */
     kk = 0;
     d__1 = 8. / (doublereal) x_data__2.nn;
-    rminimum = x_data__2.a / pow_dd(&c_b29, &d__1);
+    rminimum = x_data__2.a / pow_dd(&c_b23, &d__1);
 /*        tem_qamin=0.03d0/793.d0 */
     i__1 = *n;
     for (i__ = 1; i__ <= i__1; ++i__) {
@@ -299,40 +462,6 @@ static integer c_b176 = -123457;
     xtopp_(n, pp, &x[251]);
     etot_func__ = func_(pp);
     diff_etot__ = (d__1 = etot_func__ - etot, abs(d__1));
-    if (diff_etot__ > 1e-6) {
-	if (tracecom_1.trace) {
-	    s_wsle(&io___32);
-	    do_lio(&c__9, &c__1, "diff_etot > 1.d-6", (ftnlen)17);
-	    e_wsle();
-	    s_wsle(&io___33);
-	    do_lio(&c__9, &c__1, "idum = ", (ftnlen)7);
-	    do_lio(&c__3, &c__1, (char *)&(*idum), (ftnlen)sizeof(integer));
-	    e_wsle();
-	    s_wsle(&io___34);
-	    do_lio(&c__9, &c__1, "x coordinate is:", (ftnlen)16);
-	    e_wsle();
-	    s_wsle(&io___35);
-	    i__1 = *n;
-	    for (i__ = 1; i__ <= i__1; ++i__) {
-		for (j = 1; j <= 3; ++j) {
-		    do_lio(&c__5, &c__1, (char *)&x[i__ + j * 250], (ftnlen)
-			    sizeof(doublereal));
-		}
-	    }
-	    e_wsle();
-	    s_wsle(&io___36);
-	    do_lio(&c__9, &c__1, "etot=", (ftnlen)5);
-	    do_lio(&c__5, &c__1, (char *)&etot, (ftnlen)sizeof(doublereal));
-	    do_lio(&c__9, &c__1, ", etot_func =", (ftnlen)13);
-	    do_lio(&c__5, &c__1, (char *)&etot_func__, (ftnlen)sizeof(
-		    doublereal));
-	    do_lio(&c__9, &c__1, ", diff_etot:", (ftnlen)12);
-	    do_lio(&c__5, &c__1, (char *)&diff_etot__, (ftnlen)sizeof(
-		    doublereal));
-	    e_wsle();
-	}
-/* stop 'diff_etot > 1.d-6' */
-    }
     fsavemini_(n, &etot, emini, &x[251], &xmini[251]);
 /* go to 3000 */
     i__1 = x_data__2.istep;
@@ -627,12 +756,12 @@ L200:
     static doublereal xlanbda;
 
     /* Fortran I/O blocks */
-    static cilist io___95 = { 0, 6, 0, 0, 0 };
-    static cilist io___96 = { 0, 6, 0, fmt_110, 0 };
-    static cilist io___100 = { 0, 6, 0, 0, 0 };
-    static cilist io___101 = { 0, 6, 0, fmt_110, 0 };
-    static cilist io___102 = { 0, 6, 0, 0, 0 };
-    static cilist io___103 = { 0, 6, 0, fmt_110, 0 };
+    static cilist io___123 = { 0, 6, 0, 0, 0 };
+    static cilist io___124 = { 0, 6, 0, fmt_110, 0 };
+    static cilist io___128 = { 0, 6, 0, 0, 0 };
+    static cilist io___129 = { 0, 6, 0, fmt_110, 0 };
+    static cilist io___130 = { 0, 6, 0, 0, 0 };
+    static cilist io___131 = { 0, 6, 0, fmt_110, 0 };
 
 
     /* Parameter adjustments */
@@ -650,7 +779,7 @@ L200:
 	    if (rr[i__ + j * 250] < *rminimum) {
 		if (rr[i__ + j * 250] < 1e-30) {
 		    for (k = 1; k <= 3; ++k) {
-			x[i__ + k * 250] += (ran2_(&c_b176) * 2. - 1.) * 2.;
+			x[i__ + k * 250] += (ran2_(&c_b201) * 2. - 1.) * 2.;
 		    }
 		    goto L200;
 		}
@@ -1431,6 +1560,3 @@ L40:
     return 0;
 } /* c_evenergy1__ */
 
-#ifdef __cplusplus
-}
-#endif
