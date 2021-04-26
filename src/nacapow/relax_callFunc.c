@@ -57,6 +57,12 @@ struct {
 #define tracecom_1 tracecom_
 
 struct {
+    integer intime;
+} intimecom_;
+
+#define intimecom_1 intimecom_
+
+struct {
     integer natom;
 } use_func__;
 
@@ -153,6 +159,7 @@ static integer c_b201 = -123457;
 /* n = 60 + dint(xm / (24 * 100.d0)) */
     d__1 = xm / 8760.;
     n = (integer) (d_int(&d__1) + 60);
+    intimecom_1.intime = *ntime;
     getabscut_(tim1);
     calcu_initial__(&n);
 /* n = 70 + dint(height/262080.00) */
@@ -253,16 +260,16 @@ static integer c_b201 = -123457;
     d__1 = (doublereal) (*n) * v * 3. / 12.5663704;
     _BLNK__1.radius = pow_dd(&d__1, &c_b27);
     _BLNK__1.rmax = _BLNK__1.radius * 1.1;
-/* r_initial=0.5d0*(radius+Rmax) */
-    _BLNK__1.r_initial__ = _BLNK__1.radius * 1.3;
-/* r_initial is half of xbound. */
+    if (intimecom_1.intime >= 1607558400) {
+	    _BLNK__1.r_initial__ = _BLNK__1.radius * 1.32;
+    } else {
+	    _BLNK__1.r_initial__ = _BLNK__1.radius * 1.3;	
+    }
     _BLNK__1.rsqmax = _BLNK__1.rmax * _BLNK__1.rmax;
     dimeter = _BLNK__1.radius * 2.;
-/* xbound=dimeter*1.1d0 */
-/* xbound=dimeter*1.2d0 */
-    _BLNK__1.xbound = dimeter * 1.3;
+    _BLNK__1.xbound = _BLNK__1.r_initial__ * 2.;
     return 0;
-} /* calcu_initial__ */
+} 
 
 /* Subroutine */ int zuixi_(integer *n, doublereal *etotm, doublereal *ezuixi,
 	 doublereal *xmini, doublereal *xzuixi)
